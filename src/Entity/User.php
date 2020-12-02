@@ -6,11 +6,12 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User
+class User implements UserInterface
 {
     /**
      * @ORM\Id
@@ -23,6 +24,11 @@ class User
      * @ORM\Column(type="string", length=255)
      */
     private $username;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $role;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -78,12 +84,12 @@ class User
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getFullName(): ?string
     {
         return $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setFullName(string $username): self
     {
         $this->username = $username;
 
@@ -268,5 +274,44 @@ class User
         }
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param mixed $role
+     */
+    public function setRole($role): self
+    {
+        $this->role = $role;
+        return $this;
+    }
+
+    /*
+     * SECURITY Methods
+     */
+
+    public function getRoles()
+    {
+        return ["ROLE_USER", $this->getRole()];
+    }
+
+    public function getSalt()
+    {
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function getUsername()
+    {
+        return $this->getEmail();
     }
 }
